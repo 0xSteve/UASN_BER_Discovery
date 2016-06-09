@@ -1,0 +1,5 @@
+
+
+chmod +x gnu.sh
+
+then run the gnu script using ./gnu.sh
