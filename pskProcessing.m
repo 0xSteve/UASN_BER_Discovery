@@ -1,11 +1,11 @@
 %recordTime in sec 
 function PSKprocessing(numberOffiles,recordTime,TypeOfModulation)
 format long e
-factor = 1000;
+mkdir BPSK_Output;
 for i=1:numberOffiles
+   impulseResponse = strcat('goff_random_20pc_5km_E_no',int2str(i),'.arr');
 
-    
-impulseResponse = strcat('isovelocity-',int2str(i),'.arr');
+  
 %Reads The PSK.wav file into s1
 %[s1,Fs]=audioread('QPSK_output.wav')
 
@@ -14,17 +14,26 @@ impulseResponse = strcat('isovelocity-',int2str(i),'.arr');
 
 %Writing the upsampled signal to a .wav file
 %audiowrite('inputSig.wav',s2,96000,'BitsPerSample',16)
-travelDistTime=i/1.5
+Distance=5
+travelDistTime=Distance/1.5
 AdjustedrecordTime=recordTime+travelDistTime
 %calling the delayandsum- impulseResponse is a string with the name of .arr
 %file  for example impulseResponse='goff_random_20pc_2km_E_no1.arr'
 [rts,sample_rate]=delayandsum(impulseResponse,AdjustedrecordTime,TypeOfModulation);
 
+direct= strcat('BPSK_output/',impulseResponse(1:end-4));
+mkdir(direct);
+   
+for SNR= (-20:5:30)
+
+y=awgn(rts,SNR,'measured');
 %normalize rts 
-%normalized=(rts-min(rts))/(max(rts)-min(rts)); %only works for positive
-%numbers.
+%normalized=(rts-min(rts))/(max(rts)-min(rts));
 %time=[0:size(rts)-1]*1/sample_rate;
-%plot(time,normalized);
+%plot(time,rts);
+%figure;
+%plot(time,y);
+
 %savefig('normalized.fig');p
 
 %plot(time,rts);
@@ -32,13 +41,13 @@ AdjustedrecordTime=recordTime+travelDistTime
 %writing the output signal of delayandsum into a wav file to be processed
 %by gnuradio
 if TypeOfModulation =='QPSK'
-    output=strcat('QPSK_Output/isovelocity-',int2str(i),'.wav');
+    output=strcat('QPSK_Output/goff_random_20pc_5km_E_no',int2str(i),'SNR',int2str(SNR),'.wav');
 elseif TypeOfModulation =='BPSK'
-        output=strcat('BPSK_Output/','isovelocity-',int2str(i),'.wav');
+        output=strcat(direct,'/','goff_random_20pc_5km_E_no',int2str(i),'SNR',int2str(SNR),'.wav');
 end
 
-audiowrite(output,rts*factor,sample_rate,'BitsPerSample',16)
-
+audiowrite(output,y,sample_rate,'BitsPerSample',16)
+    end
 end
 
 disp('Done!')

@@ -2,13 +2,10 @@
 2-open pskProcessing.m in matlab
 3- call pskProcessing as follow:
 
-pskProcessing(5,540,’BPSK')
+pskProcessing(5,540,'BPSK')
 
 where 5 is the number of arrival files you have
 540 is the record time of the BPSK
 
-you may have to change the name of the impulseResponse in 3 places in pskProcessing.m
+you may have to change the name of the impulseResponse in 3 places in the code PskProcessing.m
 
-edited
-
-balffjafe

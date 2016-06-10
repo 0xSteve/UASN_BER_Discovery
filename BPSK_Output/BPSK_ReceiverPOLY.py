@@ -32,18 +32,18 @@ class BPSK_ReceiverPOLY(gr.top_block):
         self.probe_var = probe_var = 0
         self.nfilts = nfilts = 32
         self.eb = eb = 0.35
-        self.SNR = SNR = 500
+        self.SNR = SNR = 0
         self.transistion = transistion = 100
         self.timing_loop_bw = timing_loop_bw = 6.28/100.0
         self.sideband_rx = sideband_rx = 500
         self.sideband = sideband = 500
         self.samp_rate = samp_rate = 48000
-        self.rrc_taps = rrc_taps = firdes.root_raised_cosine(nfilts/16, nfilts/16, 1.0/float(sps), 0.35, 11*sps*nfilts/16)
+        self.rrc_taps = rrc_taps = firdes.root_raised_cosine(nfilts/8, nfilts/8, 1.0/float(sps), 0.35, 11*sps*nfilts/8)
         self.qpsk = qpsk = digital.constellation_rect(([0.707+0.707j, -0.707+0.707j, -0.707-0.707j, 0.707-0.707j]), ([0, 1, 2, 3]), 4, 2, 2, 1, 1).base()
         self.probe_var_n = probe_var_n = 0
         self.preamble = preamble = [1,-1,1,-1,1,1,-1,-1,1,1,-1,1,1,1,-1,1,1,-1,1,-1,-1,1,-1,-1,1,1,1,-1,-1,-1,1,-1,1,1,1,1,-1,-1,1,-1,1,-1,-1,-1,1,1,-1,-1,-1,-1,1,-1,-1,-1,-1,-1,1,1,1,1,1,1,-1,-1]
         self.phase_bw = phase_bw = 6.28/100.0
-        self.noise_amp = noise_amp = probe_var/(10**(SNR/20))
+        self.noise_amp = noise_amp = float(float(probe_var))/float(10**float(float(SNR)/20))
         self.matched_filter = matched_filter = firdes.root_raised_cosine(nfilts, nfilts, 1, eb, int(11*sps*nfilts))
         self.interpolation = interpolation = 2000
         self.eq_gain = eq_gain = 0.01
@@ -87,12 +87,12 @@ class BPSK_ReceiverPOLY(gr.top_block):
         _probe_var_thread.daemon = True
         _probe_var_thread.start()
         self.freq_xlating_fir_filter_xxx_0_0 = filter.freq_xlating_fir_filter_ccc(1, (filter.firdes.low_pass(1, samp_rate*10, sideband_rx,1000)), carrier, samp_rate)
-        self.digital_pfb_clock_sync_xxx_0 = digital.pfb_clock_sync_ccf(sps, timing_loop_bw, (rrc_taps), nfilts*2, nfilts/2, 1.5, 1)
+        self.digital_pfb_clock_sync_xxx_0 = digital.pfb_clock_sync_ccf(sps, timing_loop_bw, (rrc_taps), nfilts, nfilts/2, 1.5, 1)
         self.digital_diff_decoder_bb_0 = digital.diff_decoder_bb(2)
         self.digital_costas_loop_cc_0 = digital.costas_loop_cc(phase_bw, arity, False)
         self.digital_constellation_decoder_cb_0 = digital.constellation_decoder_cb(constel)
         
-        script, SNRinput, inputwav, outputBinary, delay= argv
+        script, inputwav, outputBinary= argv
 
         self.blocks_wavfile_source_0 = blocks.wavfile_source(inputwav, False)
         self.blocks_throttle_1_0_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
@@ -103,7 +103,7 @@ class BPSK_ReceiverPOLY(gr.top_block):
         self.blocks_file_sink_0.set_unbuffered(False)
         self.blocks_delay_1 = blocks.delay(gr.sizeof_char*1, int(delay))
         self.blocks_add_xx_0 = blocks.add_vcc(1)
-        self.analog_noise_source_x_0 = analog.noise_source_c(analog.GR_GAUSSIAN, noise_amp, 0)
+        self.analog_noise_source_x_0 = analog.noise_source_c(analog.GR_GAUSSIAN, 0, 0)
 
         ##################################################
         # Connections
@@ -290,12 +290,8 @@ class BPSK_ReceiverPOLY(gr.top_block):
 def main(top_block_cls=BPSK_ReceiverPOLY, options=None):
 
     tb = top_block_cls()
-    script, SNRinput, inputwav, outputBinary, sdelay= argv
-    tb.set_SNR(float(SNRinput))
-    tb.set_delay(int(sdelay))
+    script, inputwav, outputBinary= argv
     tb.start()
-    tb.set_SNR(float(SNRinput))
-    tb.set_delay(int(sdelay))
     tb.wait()
 
 

@@ -193,7 +193,7 @@ for ird = 1 : length( Pos.r.depth );
         %xname=strcat('Figures/',IR,'.fig');
         %savefig(xname);
     end
-    eval( [ ' save ' fileroot '_Rd_' num2str( ird ) ' rtsmat Pos sample_rate' ] );
+    %eval( [ ' save ' fileroot '_Rd_' num2str( ird ) ' rtsmat Pos sample_rate' ] );
 end
 end
 % save autec

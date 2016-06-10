@@ -75,10 +75,9 @@ class BPSK_Sender1(gr.top_block):
         self.blocks_file_sink_0_0.set_unbuffered(False)
         
         
-        script, sdelay= argv
 
         
-        self.blocks_delay_0_0 = blocks.delay(gr.sizeof_char*1, int(sdelay))
+        self.blocks_delay_0_0 = blocks.delay(gr.sizeof_char*1, int(delay))
         self.blocks_complex_to_real_0 = blocks.complex_to_real(1)
 
         ##################################################
@@ -224,10 +223,7 @@ class BPSK_Sender1(gr.top_block):
 
 
 def main(top_block_cls=BPSK_Sender1, options=None):
-    script, sdelay= argv
     tb = top_block_cls()
-    print(int(sdelay))
-    tb.set_delay(int(sdelay))
     tb.start()
     tb.wait()
 
