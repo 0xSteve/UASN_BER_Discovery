@@ -1,9 +1,9 @@
 #!/bin/bash
-for ((c=1; c<=100; c++))
+for ((c=1; c<=5; c++))
  do
 #rm goff_random_20pc_5km_E_no$c/outputBinary*
-  rm goff_random_80pc_5km_E_no$c/filters32POLY/BER
-rm goff_random_80pc_5km_E_no$c/filters64POLY/BER
+  rm -r goff_random_200pc_5km_E_no$c/resultsfilters32POLY
+rm -r goff_random_20pc_5km_E_no$c/resultsfilters64POLY
 
 # rm -r logs
 done

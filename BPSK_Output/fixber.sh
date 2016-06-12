@@ -1,7 +1,8 @@
 #!/bin/bash
 
 arrivalFilename="goff_random_20pc_5km_E_no"
-NoF=100
+receiver_type="resultsfilters64POLY"
+NoF=5
 #y is the number of arrival files you are trying to process
 for ((y=1; y<=$NoF; y++))do
 
@@ -9,12 +10,12 @@ for ((y=1; y<=$NoF; y++))do
 for ((SNR=-20; SNR<=30; SNR=SNR+5))
 do
 sp="_"
-outputfile="$arrivalFilename$y"'/filters64POLY/'"outputBinary$y$sp$SNR"
+outputfile="$arrivalFilename$y"'/resultsfilters64POLY/'"outputBinary$y$sp$SNR"
 inputfile="$arrivalFilename$y/$arrivalFilename$y"'SNR'"$SNR.wav"
 
 #extract the new delay
 #a=$(grep 'lagDiff=\+' myresult$y$SNR.out | grep  -o "[^=|.]\d\+")
-a=$(grep 'lagDiff=\+' logs/resultsfilters64POLY/myresult$y$SNR.out | grep  -o "[-]*[0-9]\+")
+a=$(grep 'lagDiff=\+' "$arrivalFilename$y"'/'"$receiver_type"'/'myresult$y$SNR.out | grep  -o "[-]*[0-9]\+")
 echo "THIS IS THE RESULT OF CORRELATION $a"
 #calculating BER with the delay
 wait ${!}

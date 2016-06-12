@@ -7,7 +7,7 @@ mkdir logs
 arrivalFilename="goff_random_20pc_5km_E_no"
 receiver_type="resultsfilters64POLY"
 mkdir logs/$receiver_type
-NoF=100
+NoF=5
 python2.7 BPSK_Sender-M.py
 #y is the number of arrival files you are trying to process
  for ((y=1; y<=$NoF; y++))
@@ -51,10 +51,8 @@ python2.7 RIN.py inputBinary >>logs/logfileRIN
 python2.7 ROUT.py $outputfile >>logs/logfileROUT
 done
 wait ${!}
-echo $y
 done
 wait ${!}
-
 
 
 
@@ -71,16 +69,18 @@ inputfile="$arrivalFilename$y/$arrivalFilename$y"'SNR'"$SNR.wav"
 
 outputBinaryFile=$outputfile"OUT"
 #Starting matlab and running Correlation
-cat <<EOF | matlab -nodesktop -nosplash -nodisplay />logs/$receiver_type/myresult$y$SNR.out
+cat <<EOF | matlab -nodesktop -nosplash -nodisplay />"$arrivalFilename$y"'/'"$receiver_type"'/'myresult$y$SNR.out &
 import java.lang.System;
 A=CorrelateGnuRadio('inputBinaryIN','$outputBinaryFile')
 java.lang.System.exit(0);
 exit
 EOF
+done
+#if [ $((y%2)) -eq 0 ];
+#then
 wait ${!}
+#fi
 done
-done
-
 
 
 #y is the number of arrival files you are trying to process
@@ -95,15 +95,12 @@ inputfile="$arrivalFilename$y/$arrivalFilename$y"'SNR'"$SNR.wav"
 
 #extract the new delay
 #a=$(grep 'lagDiff=\+' myresult$y$SNR.out | grep  -o "[^=|.]\d\+")
-a=$(grep 'lagDiff=\+' logs/$receiver_type/myresult$y$SNR.out | grep  -o "[-]*[0-9]\+")
+a=$(grep 'lagDiff=\+' "$arrivalFilename$y"'/'"$receiver_type"'/'myresult$y$SNR.out | grep  -o "[-]*[0-9]\+")
 echo "THIS IS THE RESULT OF CORRELATION $a"
 #calculating BER with the delay
 wait ${!}
 python2.7 BER.py inputBinary $outputfile $a >>logs/logfile2 &
 wait ${!}
 echo 'This is the value of '"$SNR"
-
 done
 done
-
-
